@@ -12,11 +12,10 @@ pool:
 
 jobs:
 - job: AlertsJob
-  displayName: 'Alerts Handling Job'
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), contains(variables['Build.SourceBranch'], 'alerts'))
   steps:
-    - template: templates/alerts-job.yml
-      parameters:
+    - task: AzureAppServiceSettings@1
+      inputs:
         azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
         appName: 'notifyapps'
         resourceGroupName: 'notifyapps_group'
@@ -35,15 +34,35 @@ jobs:
               "value": "$(SLACK_WEBHOOK_URL)"
             }
           ]
+
+    - task: AzureFunctionApp@2
+      inputs:
+        connectedServiceNameARM: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+        appType: 'functionAppLinux'
+        appName: 'notifyapps'
+        package: '$(System.DefaultWorkingDirectory)/alerts'
         runtimeStack: 'PYTHON|3.11'
-        packagePath: '$(System.DefaultWorkingDirectory)/alerts'
 
 - job: SrcJob
-  displayName: 'Source Handling Job'
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), contains(variables['Build.SourceBranch'], 'src'))
   steps:
-    - template: templates/src-job.yml
-      parameters:
+    - task: FuncToolsInstaller@0
+      inputs:
+        version: 'latest'
+
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.11'
+        addToPath: true
+
+    - script: |
+        cd src
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: 'Install dependencies'
+
+    - task: AzureAppServiceSettings@1
+      inputs:
         azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
         appName: 'pdfocrjson'
         resourceGroupName: 'pdfocrjson_group'
@@ -70,12 +89,14 @@ jobs:
               "value": "$(FORM_RECOGNIZER_API_KEY)"
             }
           ]
-        pythonVersion: '3.11'
-        script: |
-          cd Simple-OCR
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
         inlineScript: |
           cd src
           func pack
-          func azure functionapp publish $(App_name) --python
+          func azure functionapp publish 'pdfocrjson' --python
+      displayName: 'Deploy Function App'
