@@ -48,7 +48,7 @@ resource "azurerm_linux_function_app" "main" {
 
 # Blob notification function
 resource "azurerm_linux_function_app" "notify" {
-  name                = "func-ocr-${terraform.workspace}-${local.naming-location}"
+  name                = "func-notify-${terraform.workspace}-${local.naming-location}"
   resource_group_name = var.resource-group
   location            = var.location
 
