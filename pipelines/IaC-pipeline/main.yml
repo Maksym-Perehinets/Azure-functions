@@ -21,7 +21,7 @@ pr:
 stages:
 - stage: Commit
   displayName: Infrastructure rebuild
-  condition: or(eq(variables['Build.Reason'], 'BatchedCI'), eq(variables['Build.Reason'], 'IndividualCI'))
+  condition: or(eq(variables['Build.Reason'], 'BatchedCI'), eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'Manual')))
   pool:
     vmImage: ubuntu-latest
   jobs:
