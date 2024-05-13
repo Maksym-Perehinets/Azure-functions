@@ -1,13 +1,9 @@
 steps:
-  - script: |
-      echo "Working form terraform directory"
-      cd '$(Build.SourcesDirectory)/IaC/main'
-    displayName: 'Change directory'
-
   - task: TerraformInstaller@1
     displayName: "Latest Version of terraform installation"
     inputs:
       terraformVersion: 'latest'
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
   - task: TerraformTaskV4@4
     displayName: terraform init
     inputs:
@@ -18,6 +14,7 @@ steps:
       backendAzureRmStorageAccountName: 'remotetfbac324r4njrf'
       backendAzureRmContainerName: 'tfstate'
       backendAzureRmKey: 'terraform.tfstate'
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
 
   # Select terraform workspace
   - task: Bash@3
@@ -26,12 +23,14 @@ steps:
     inputs:
       targetType: inline
       script: terraform workspace new prod && terraform workspace select prod
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
   - task: Bash@3
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     displayName: Create and use terraform development workspace
     inputs:
       targetType: inline
       script: terraform workspace new dev && terraform workspace select dev
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
 
   # Code validation
   - task: TerraformTaskV4@4
@@ -39,12 +38,14 @@ steps:
     inputs:
       provider: 'azurerm'
       command: 'validate'
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
   # Terraform plan
   - task: TerraformTaskV4@4
     displayName: terraform plan
     inputs:
       provider: 'azurerm'
       command: 'plan'
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
       environmentServiceNameAzureRM: 'Azure for Students (12c692a0-00e1-447a-8d87-2712018a0472)'
       commandOptions: >- 
                         -var="location=$(location)"
@@ -54,6 +55,7 @@ steps:
 #    inputs:
 #      provider: 'azurerm'
 #      command: 'apply'
+#      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
 #      environmentServiceNameAzureRM: 'Azure for Students (12c692a0-00e1-447a-8d87-2712018a0472)'
 #      commandOptions: >-
 #                        -auto-approve
