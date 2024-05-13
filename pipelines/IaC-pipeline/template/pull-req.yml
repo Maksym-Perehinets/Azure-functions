@@ -16,20 +16,20 @@ steps:
       backendAzureRmKey: 'terraform.tfstate'
 
   # Select terraform workspace
-  - task: TerraformCLI@0
-    displayName: Select production workspace
+  - task: TerraformTaskV4@4
+    displayName: Select Production workspace
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     inputs:
-      command: workspace
-      workspaceSubCommand: select
-      workspaceName: prod
-  - task: TerraformCLI@0
-    displayName: Select development workspace
+      provider: 'azurerm'
+      command: 'workspace'
+      commandOptions: 'select prod'
+  - task: TerraformTaskV4@4
+    displayName: Select Development workspace
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     inputs:
-      command: workspace
-      workspaceSubCommand: select
-      workspaceName: dev
+      provider: 'azurerm'
+      command: 'workspace'
+      commandOptions: 'select dev'
 
   - task: TerraformTaskV4@4
     displayName: terraform validate
