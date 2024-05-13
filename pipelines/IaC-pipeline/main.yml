@@ -5,7 +5,7 @@ trigger:
       - main
   paths:
     include:
-      - IaC
+      - IaC/*
     exclude:
       - "*"
 
