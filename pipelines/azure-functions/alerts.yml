@@ -14,12 +14,14 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
-    App_name: 'notifyapps'
-    Group_name: 'notifyapps_group'
-  ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
-    App_name: 'notifyapps_dev'
-    Group_name: 'notifyapps_dev_group'
+  - group: OCR_Environment_Var
+  - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+      - name: 'notifyapps'
+        value: 'notifyapps_group'
+  - ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
+      - name: 'notifyapps_dev'
+        value: 'notifyapps_dev_group'
+
 
 steps:
   - bash: echo "Current branch is $(Build.SourceBranchName)"
