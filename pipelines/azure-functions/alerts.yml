@@ -16,10 +16,14 @@ pool:
 variables:
   - group: OCR_Environment_Var
   - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
-      - name: 'notifyapps'
+      - name: 'App_name'
+        value: 'notifyapps'
+      - name: 'Group_name'
         value: 'notifyapps_group'
   - ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
-      - name: 'notifyapps_dev'
+      - name: 'App_name'
+        value: 'notifyapps_dev'
+      - name: 'Group_name'
         value: 'notifyapps_dev_group'
 
 
