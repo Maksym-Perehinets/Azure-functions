@@ -1,0 +1,84 @@
+
+trigger:
+  branches:
+    include:
+    - main
+    - dev  
+  paths:
+    include:
+    - src/**
+    exclude:
+      - "*"
+
+pool:
+  vmImage: ubuntu-latest
+
+
+variables:
+  ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+    App_name: 'pdfocrjson'
+    Group_name: 'pdfocrjson_group'
+  ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
+    App_name: 'pdfocrjson_dev'
+    Group_name: 'pdfocrjson_dev_group'
+
+
+steps:
+- task: FuncToolsInstaller@0
+  inputs:
+    version: 'latest'
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.11'
+    addToPath: true
+
+- script: |
+    cd Simple-OCR
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
+
+
+- task: AzureAppServiceSettings@1
+  inputs:
+    azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+    appName: '$(App_name)'
+    resourceGroupName: '$(Group_name)'
+    appSettings: |
+      [
+        {
+          "name": "STORAGE_CONNECTION_STRING",
+          "value": "$(STORAGE_CONNECTION_STRING)"
+        },
+        {
+          "name": "FILE_SHARE_NAME",
+          "value": "$(FILE_SHARE_NAME)"
+        },
+        {
+          "name": "BLOB_CONTAINER_NAME",
+          "value": "$(BLOB_CONTAINER_NAME)"
+        },
+        {
+          "name": "FORM_RECOGNIZER_ENDPOINT",
+          "value": "$(FORM_RECOGNIZER_ENDPOINT)"
+        },
+        {
+          "name": "FORM_RECOGNIZER_API_KEY",
+          "value": "$(FORM_RECOGNIZER_API_KEY)"
+        }
+      ]
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      cd src
+      func pack
+      func azure functionapp publish $(App_name) --python
+  displayName: 'Deploy Function App'
+
+
+
+  
