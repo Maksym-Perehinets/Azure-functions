@@ -11,22 +11,19 @@ pool:
   vmImage: ubuntu-latest
 
 jobs:
-- job: DetermineChanges
-  displayName: 'Determine which files have changed'
-  pool:
-    vmImage: 'ubuntu-latest'
+- job: CheckChanges
+  displayName: Check for changes in specific folders
   steps:
-  - checkout: self
-  - bash: |
-      git fetch --depth=1 origin $(Build.SourceBranch)
-      ALERTS_CHANGED=$(git diff --quiet HEAD HEAD~ -- alerts/; echo $?)
-      SRC_CHANGED=$(git diff --quiet HEAD HEAD~ -- src/; echo $?)
-      echo "##vso[task.setvariable variable=alerts_changed]$ALERTS_CHANGED"
-      echo "##vso[task.setvariable variable=src_changed]$SRC_CHANGED"
-    displayName: 'Check for changes in directories'
+    - checkout: self
+    - bash: |
+        echo "Checking for changes in the 'alerts' and 'src' directories..."
+        git diff --name-only ${{ variables['Build.SourceBranch'] }} ${{ variables['Build.SourceVersion'] }} | grep 'alerts/' && echo "##vso[task.setvariable variable=alertChanges;isOutput=true]true"
+        git diff --name-only ${{ variables['Build.SourceBranch'] }} ${{ variables['Build.SourceVersion'] }} | grep 'src/' && echo "##vso[task.setvariable variable=srcChanges;isOutput=true]true"
+      name: detectChanges
+      displayName: Detect Changes
 
 - job: AlertsJob
-  condition: eq(dependencies.DetermineChanges.outputs['alerts_changed'], '1')
+  condition: and(succeeded(), eq(dependencies.CheckChanges.outputs['detectChanges.alertChanges'], 'true'))
   steps:
     - task: AzureAppServiceSettings@1
       inputs:
