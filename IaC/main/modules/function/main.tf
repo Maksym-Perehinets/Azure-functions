@@ -14,7 +14,7 @@ resource "azurerm_service_plan" "main" {
   resource_group_name = var.resource-group
   location            = var.location
   os_type             = "Linux"
-  sku_name            = terraform.workspace == "prod" ? "EP1": "Y1"
+  sku_name            = terraform.workspace == "prod" ? "Y1": "Y1"
 }
 
 resource "azurerm_linux_function_app" "main" {
