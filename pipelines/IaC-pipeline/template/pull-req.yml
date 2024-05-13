@@ -17,14 +17,14 @@ steps:
 
   # Select terraform workspace
   - task: TerraformCLI@0
-    displayName: select workspace foo
+    displayName: Select production workspace
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     inputs:
       command: workspace
       workspaceSubCommand: select
       workspaceName: prod
   - task: TerraformCLI@0
-    displayName: select workspace foo
+    displayName: Select development workspace
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     inputs:
       command: workspace
