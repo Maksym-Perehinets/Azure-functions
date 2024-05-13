@@ -33,7 +33,7 @@ steps:
     addToPath: true
 
 - script: |
-    cd Simple-OCR
+    cd src
     python -m pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
