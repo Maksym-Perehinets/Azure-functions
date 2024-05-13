@@ -26,7 +26,6 @@ variables:
       - name: 'Group_name'
         value: 'notifyapps_dev_group'
 
-
 steps:
   - bash: echo "Current branch is $(Build.SourceBranchName)"
   - task: AzureAppServiceSettings@1
@@ -57,3 +56,4 @@ steps:
       appName: $(App_name)
       package: '$(System.DefaultWorkingDirectory)/alerts'
       runtimeStack: 'PYTHON|3.11'
+
