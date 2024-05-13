@@ -1,11 +1,53 @@
 trigger:
+  batch: true
   branches:
     include:
     - dev
+    - main
+  paths:
+    include:
+    - alerts/**
+    exclude:
+      - "*"
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
+
+variables:
+  ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+    App_name: 'notifyapps'
+    Group_name: 'notifyapps_group'
+  ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
+    App_name: 'notifyapps_dev'
+    Group_name: 'notifyapps_dev_group'
 
 steps:
-- script: echo "Pipeline triggered on branch $(Build.SourceBranchName)"
-  displayName: 'Echo Current Branch'
+  - bash: echo "Current branch is $(Build.SourceBranchName)"
+  - task: AzureAppServiceSettings@1
+    inputs:
+      azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+      appName: $(App_name)
+      resourceGroupName: $(Group_name)
+      appSettings: |
+        [
+          {
+            "name": "DISCORD_WEBHOOK_URL",
+            "value": "$(DISCORD_WEBHOOK_URL)"
+          },
+          {
+            "name": "fileblob123_STORAGE",
+            "value": "$(fileblob123_STORAGE)"
+          },
+          {
+            "name": "SLACK_WEBHOOK_URL",
+            "value": "$(SLACK_WEBHOOK_URL)"
+          }
+        ]
+
+  - task: AzureFunctionApp@2
+    inputs:
+      connectedServiceNameARM: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+      appType: 'functionAppLinux'
+      appName: $(App_name)
+      package: '$(System.DefaultWorkingDirectory)/alerts'
+      runtimeStack: 'PYTHON|3.11'
