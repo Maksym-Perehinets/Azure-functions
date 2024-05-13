@@ -11,6 +11,20 @@ pool:
   vmImage: ubuntu-latest
 
 jobs:
+- job: DetermineChanges
+  displayName: 'Determine which files have changed'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - checkout: self
+  - bash: |
+      git fetch --depth=1 origin $(Build.SourceBranch)
+      ALERTS_CHANGED=$(git diff --quiet HEAD HEAD~ -- alerts/; echo $?)
+      SRC_CHANGED=$(git diff --quiet HEAD HEAD~ -- src/; echo $?)
+      echo "##vso[task.setvariable variable=alerts_changed]$ALERTS_CHANGED"
+      echo "##vso[task.setvariable variable=src_changed]$SRC_CHANGED"
+    displayName: 'Check for changes in directories'
+
 - job: AlertsJob
   condition: contains(variables['Build.SourceVersionMessage'], 'alerts/')
   steps:
