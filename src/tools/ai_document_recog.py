@@ -30,6 +30,6 @@ class AiDocumentRecog:
             except Exception as err:
                 logging.error(f"Unexpected exception ocurred {err}")
             # Format result string to suit json format
-            result[key] = { "pages": [page.to_dict() for page in poller_result  .pages] }
+            result[key] = {"pages": [page.to_dict() for page in poller_result.pages]}
         await self.recogn_conn.close()
         return result

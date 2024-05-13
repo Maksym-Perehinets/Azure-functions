@@ -20,5 +20,3 @@ async def local_test(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse("Documents processed and results stored successfully!")
     else: 
         return func.HttpResponse(f"Unexpected error ocured error: {is_file_pusshed}")
-
-
