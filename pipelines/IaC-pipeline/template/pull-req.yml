@@ -1,13 +1,16 @@
 # this is template for PR
 steps:
+  - script: |
+      echo "Working form terraform directory"
+      cd '$(Build.SourcesDirectory)/IaC/main'
+    displayName: 'Change directory'
+
   - task: TerraformInstaller@1
     displayName: "Latest Version of terraform installation"
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       terraformVersion: 'latest'
   - task: TerraformTaskV4@4
     displayName: terraform init
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       provider: 'azurerm'
       command: 'init'
@@ -20,26 +23,22 @@ steps:
   # Select terraform workspace
   - task: Bash@3
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       targetType: inline
       script: terraform workspace new prod && terraform workspace select prod
   - task: Bash@3
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       targetType: inline
       script: terraform workspace new dev && terraform workspace select dev
 
   - task: TerraformTaskV4@4
     displayName: terraform validate
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       provider: 'azurerm'
       command: 'validate'
   - task: TerraformTaskV4@4
     displayName: terraform plan
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       provider: 'azurerm'
       command: 'plan'

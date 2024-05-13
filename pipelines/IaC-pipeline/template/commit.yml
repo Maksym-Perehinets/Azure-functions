@@ -1,7 +1,11 @@
 steps:
+  - script: |
+      echo "Working form terraform directory"
+      cd '$(Build.SourcesDirectory)/IaC/main'
+    displayName: 'Change directory'
+
   - task: TerraformInstaller@1
     displayName: "Latest Version of terraform installation"
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       terraformVersion: 'latest'
   - task: TerraformTaskV4@4
@@ -19,14 +23,12 @@ steps:
   - task: Bash@3
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     displayName: Create and use terraform production workspace
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       targetType: inline
       script: terraform workspace new prod && terraform workspace select prod
   - task: Bash@3
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     displayName: Create and use terraform development workspace
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       targetType: inline
       script: terraform workspace new dev && terraform workspace select dev
@@ -34,14 +36,12 @@ steps:
   # Code validation
   - task: TerraformTaskV4@4
     displayName: terraform validate
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       provider: 'azurerm'
       command: 'validate'
   # Terraform plan
   - task: TerraformTaskV4@4
     displayName: terraform plan
-    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     inputs:
       provider: 'azurerm'
       command: 'plan'
@@ -51,7 +51,6 @@ steps:
   # Terraform apply
 #  - task: TerraformTaskV4@4
 #    displayName: terraform apply
-#    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
 #    inputs:
 #      provider: 'azurerm'
 #      command: 'apply'
