@@ -20,14 +20,12 @@ steps:
     displayName: Select Production workspace
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     inputs:
-      provider: 'azurerm'
       command: 'workspace'
       commandOptions: 'select prod'
   - task: TerraformTaskV4@4
     displayName: Select Development workspace
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     inputs:
-      provider: 'azurerm'
       command: 'workspace'
       commandOptions: 'select dev'
 
