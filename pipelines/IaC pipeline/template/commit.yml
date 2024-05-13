@@ -1,0 +1,40 @@
+steps:
+  - task: TerraformInstaller@1
+    displayName: "Latest Version of terraform installation"
+    inputs:
+      terraformVersion: 'latest'
+  - task: TerraformTaskV4@4
+    displayName: terraform init
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      backendServiceArm: 'terraform-backend'
+      backendAzureRmResourceGroupName: 'ocr-remote-tf-back-end'
+      backendAzureRmStorageAccountName: 'remotetfbac324r4njrf'
+      backendAzureRmContainerName: 'tfstate'
+      backendAzureRmKey: 'terraform.tfstate'
+  # Code validation
+  - task: TerraformTaskV4@4
+    displayName: terraform validate
+    inputs:
+      provider: 'azurerm'
+      command: 'validate'
+  # Terraform plan
+  - task: TerraformTaskV4@4
+    displayName: terraform plan
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      environmentServiceNameAzureRM: 'BeStrong'
+      commandOptions: >- 
+                        -var="location=$(location)"
+  # Terraform apply
+  - task: TerraformTaskV4@4
+    displayName: terraform apply
+    inputs:
+      provider: 'azurerm'
+      command: 'apply'
+      environmentServiceNameAzureRM: 'BeStrong'
+      commandOptions: >-
+                        -auto-approve 
+                        -var="location=$(location)"

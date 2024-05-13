@@ -1,0 +1,29 @@
+# this is template for PR
+steps:
+  - task: TerraformInstaller@1
+    displayName: "Latest Version of terraform installation"
+    inputs:
+      terraformVersion: 'latest'
+  - task: TerraformTaskV4@4
+    displayName: terraform init
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      backendServiceArm: 'terraform-backend'
+      backendAzureRmResourceGroupName: 'ocr-remote-tf-back-end'
+      backendAzureRmStorageAccountName: 'remotetfbac324r4njrf'
+      backendAzureRmContainerName: 'tfstate'
+      backendAzureRmKey: 'terraform.tfstate'
+  - task: TerraformTaskV4@4
+    displayName: terraform validate
+    inputs:
+      provider: 'azurerm'
+      command: 'validate'
+  - task: TerraformTaskV4@4
+    displayName: terraform plan
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      environmentServiceNameAzureRM: 'Azure for Students (12c692a0-00e1-447a-8d87-2712018a0472)'
+      commandOptions: >- 
+                        -var="location=$(location)"
