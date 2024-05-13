@@ -1,9 +1,18 @@
-output "function-storage-ac-name" {
+output "function-ocr-storage-ac-name" {
   value = azurerm_storage_account.function-storage.name
 }
 
-output "function-storage-ac-access-key" {
+output "function-ocr-storage-ac-access-key" {
   value = azurerm_storage_account.function-storage.primary_access_key
+  sensitive = true
+}
+
+output "function-notify-storage-ac-name" {
+  value = azurerm_storage_account.notify-function-storage.name
+}
+
+output "function-notify-storage-ac-access-key" {
+  value = azurerm_storage_account.notify-function-storage.primary_access_key
   sensitive = true
 }
 
