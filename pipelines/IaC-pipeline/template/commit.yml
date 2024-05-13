@@ -50,13 +50,13 @@ steps:
       commandOptions: >- 
                         -var="location=$(location)"
   # Terraform apply
-#  - task: TerraformTaskV4@4
-#    displayName: terraform apply
-#    inputs:
-#      provider: 'azurerm'
-#      command: 'apply'
-#      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
-#      environmentServiceNameAzureRM: 'Azure for Students (12c692a0-00e1-447a-8d87-2712018a0472)'
-#      commandOptions: >-
-#                        -auto-approve
-#                        -var="location=$(location)"
+  - task: TerraformTaskV4@4
+    displayName: terraform apply
+    inputs:
+      provider: 'azurerm'
+      command: 'apply'
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
+      environmentServiceNameAzureRM: 'Azure for Students (12c692a0-00e1-447a-8d87-2712018a0472)'
+      commandOptions: >-
+                        -auto-approve
+                        -var="location=$(location)"
