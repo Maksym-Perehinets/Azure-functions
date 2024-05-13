@@ -1,11 +1,12 @@
 trigger:
+  batch: true
   branches:
     include:
     - main
     - dev
   paths:
     include:
-    - alerts/*
+    - alerts/**
     exclude:
       - "*"
 
@@ -13,14 +14,15 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+  ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
     App_name: 'notifyapps'
     Group_name: 'notifyapps_group'
-  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/dev') }}:
+  ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
     App_name: 'notifyapps_dev'
     Group_name: 'notifyapps_dev_group'
 
 steps:
+  - bash: echo "Current branch is $(Build.SourceBranchName)"
   - task: AzureAppServiceSettings@1
     inputs:
       azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
