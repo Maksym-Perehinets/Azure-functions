@@ -28,6 +28,7 @@ stages:
   jobs:
   - job: TerraformApply
     displayName: Code validation and infrastructure deploy (terraform validate/aplly)
+    workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
     steps:
       - template: template/commit.yml
 - stage: PullRequest
@@ -38,5 +39,6 @@ stages:
   jobs:
     - job: TerraformPlan
       displayName: Code validation and dry run (terraform validate/plan)
+      workingDirectory: '$(Build.SourcesDirectory)/IaC/main'
       steps:
         - template: template/pull-req.yml
