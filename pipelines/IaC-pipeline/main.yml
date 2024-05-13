@@ -27,7 +27,7 @@ stages:
     vmImage: ubuntu-latest
   jobs:
   - job: TerraformApply
-    displayName: Code validation and infrastructure deploy (terraform validate/apply)
+    displayName: Code validation and infrastructure deploy (terraform validate/aplly)
     steps:
       - template: template/commit.yml
 - stage: PullRequest
