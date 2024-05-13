@@ -13,7 +13,7 @@ module "storage" {
   resource-group   = azurerm_resource_group.dev.name
   file-share-quota = terraform.workspace == "prod" ? 5 : 1
 }
-# Pipeline test 9
+
 module "cognitive_service" {
   source         = "./modules/cognitive_service"
   location       = var.location
@@ -21,7 +21,7 @@ module "cognitive_service" {
 }
 
 module "function" {
-  source         = "./modules/function"
+  source = "./modules/function"
   depends_on = [
     module.cognitive_service,
     module.storage
@@ -30,8 +30,10 @@ module "function" {
   resource-group = azurerm_resource_group.dev.name
 
   # Designated function storage
-  storage-ac-name       = module.storage.function-storage-ac-name
-  storage-ac-access_key = module.storage.function-storage-ac-access-key
+  storage-ocr-ac-name          = module.storage.function-ocr-storage-ac-name
+  storage-ocr-ac-access_key    = module.storage.function-ocr-storage-ac-access-key
+  storage-notify-ac-name       = module.storage.function-notify-storage-ac-name
+  storage-notify-ac-access_key = module.storage.function-notify-storage-ac-access-key
 
   # ENV variables
   ocr-storage-connection-string = module.storage.ocr-storage-ac-connection-string

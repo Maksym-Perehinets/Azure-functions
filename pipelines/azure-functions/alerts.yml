@@ -56,3 +56,4 @@ steps:
       appName: $(App_name)
       package: '$(System.DefaultWorkingDirectory)/alerts'
       runtimeStack: 'PYTHON|3.11'
+

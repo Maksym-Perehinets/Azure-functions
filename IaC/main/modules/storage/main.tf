@@ -16,7 +16,16 @@ resource "azurerm_storage_account" "main" {
 }
 
 resource "azurerm_storage_account" "function-storage" {
-  name                     = "stafunc${terraform.workspace}${local.naming-location}${random_id.storage-account-suffix.hex}"
+  name                     = "safunocr${terraform.workspace}${local.naming-location}${random_id.storage-account-suffix.hex}"
+  resource_group_name      = var.resource-group
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = terraform.workspace == "prod" ? "GRS" : "LRS"
+
+}
+
+resource "azurerm_storage_account" "notify-function-storage" {
+  name                     = "safunntf${terraform.workspace}${local.naming-location}${random_id.storage-account-suffix.hex}"
   resource_group_name      = var.resource-group
   location                 = var.location
   account_tier             = "Standard"

@@ -17,13 +17,14 @@ resource "azurerm_service_plan" "main" {
   sku_name            = terraform.workspace == "prod" ? "Y1": "Y1"
 }
 
+# OCR app function
 resource "azurerm_linux_function_app" "main" {
   name                = "func-ocr-${terraform.workspace}-${local.naming-location}"
   resource_group_name = var.resource-group
   location            = var.location
 
-  storage_account_name       = var.storage-ac-name
-  storage_account_access_key = var.storage-ac-access_key
+  storage_account_name       = var.storage-ocr-ac-name
+  storage_account_access_key = var.storage-ocr-ac-access_key
   service_plan_id            = azurerm_service_plan.main.id
 
   site_config {
@@ -43,5 +44,24 @@ resource "azurerm_linux_function_app" "main" {
     "FORM_RECOGNIZER_ENDPOINT" = var.form-recognizer-endpoint
     "FORM_RECOGNIZER_API_KEY" = var.form-recognizer-api-key
   }
+}
 
+# Blob notification function
+resource "azurerm_linux_function_app" "notify" {
+  name                = "func-ocr-${terraform.workspace}-${local.naming-location}"
+  resource_group_name = var.resource-group
+  location            = var.location
+
+  storage_account_name       = var.storage-notify-ac-name
+  storage_account_access_key = var.storage-notify-ac-access_key
+  service_plan_id            = azurerm_service_plan.main.id
+
+  site_config {
+    application_insights_connection_string = azurerm_application_insights.main.connection_string
+    application_insights_key = azurerm_application_insights.main.instrumentation_key
+
+    application_stack {
+      python_version = "3.11"
+    }
+  }
 }

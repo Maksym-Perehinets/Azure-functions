@@ -1,118 +1,51 @@
 trigger:
   branches:
     include:
-    - main  
+    - main
+    - dev
   paths:
     include:
     - alerts/**
-    - src/**
+    exclude:
+      - "*"
 
 pool:
   vmImage: ubuntu-latest
 
-jobs:
-- job: CheckChanges
-  displayName: Check for changes in specific folders
-  steps:
-    - checkout: self
-    - bash: |
-        git diff --quiet HEAD HEAD~ -- alerts
-            if [ $? -ne 0 ]; then
-              echo "Changes detected in alerts folder"
-            fi
+variables:
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    App_name: 'notifyapps'
+    Group_name: 'notifyapps_group'
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/dev') }}:
+    App_name: 'notifyapps_dev'
+    Group_name: 'notifyapps_dev_group'
 
-            git diff --quiet HEAD HEAD~ -- src
-            if [ $? -ne 0 ]; then
-              echo "Changes detected in src folder"
-            fi
-      displayName: Detect Changes
+steps:
+  - task: AzureAppServiceSettings@1
+    inputs:
+      azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+      appName: $(App_name)
+      resourceGroupName: $(Group_name)
+      appSettings: |
+        [
+          {
+            "name": "DISCORD_WEBHOOK_URL",
+            "value": "$(DISCORD_WEBHOOK_URL)"
+          },
+          {
+            "name": "fileblob123_STORAGE",
+            "value": "$(fileblob123_STORAGE)"
+          },
+          {
+            "name": "SLACK_WEBHOOK_URL",
+            "value": "$(SLACK_WEBHOOK_URL)"
+          }
+        ]
 
-- job: AlertsJob
-  condition: and(succeeded(), eq(dependencies.CheckChanges.outputs['detectChanges.alertChanges'], 'true'))
-  steps:
-    - task: AzureAppServiceSettings@1
-      inputs:
-        azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
-        appName: 'notifyapps'
-        resourceGroupName: 'notifyapps_group'
-        appSettings: |
-          [
-            {
-              "name": "DISCORD_WEBHOOK_URL",
-              "value": "$(DISCORD_WEBHOOK_URL)"
-            },
-            {
-              "name": "fileblob123_STORAGE",
-              "value": "$(fileblob123_STORAGE)"
-            },
-            {
-              "name": "SLACK_WEBHOOK_URL",
-              "value": "$(SLACK_WEBHOOK_URL)"
-            }
-          ]
-
-    - task: AzureFunctionApp@2
-      inputs:
-        connectedServiceNameARM: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
-        appType: 'functionAppLinux'
-        appName: 'notifyapps'
-        package: '$(System.DefaultWorkingDirectory)/alerts'
-        runtimeStack: 'PYTHON|3.11'
-
-- job: OCRJob
-  condition: eq(dependencies.DetermineChanges.outputs['src_changed'], '1')
-  steps:
-    - task: FuncToolsInstaller@0
-      inputs:
-        version: 'latest'
-
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.11'
-        addToPath: true
-
-    - script: |
-        cd src
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-      displayName: 'Install dependencies'
-
-    - task: AzureAppServiceSettings@1
-      inputs:
-        azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
-        appName: 'pdfocrjson'
-        resourceGroupName: 'pdfocrjson_group'
-        appSettings: |
-          [
-            {
-              "name": "STORAGE_CONNECTION_STRING",
-              "value": "$(STORAGE_CONNECTION_STRING)"
-            },
-            {
-              "name": "FILE_SHARE_NAME",
-              "value": "$(FILE_SHARE_NAME)"
-            },
-            {
-              "name": "BLOB_CONTAINER_NAME",
-              "value": "$(BLOB_CONTAINER_NAME)"
-            },
-            {
-              "name": "FORM_RECOGNIZER_ENDPOINT",
-              "value": "$(FORM_RECOGNIZER_ENDPOINT)"
-            },
-            {
-              "name": "FORM_RECOGNIZER_API_KEY",
-              "value": "$(FORM_RECOGNIZER_API_KEY)"
-            }
-          ]
-
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          cd src
-          func pack
-          func azure functionapp publish 'pdfocrjson' --python
-      displayName: 'Deploy Function App'
+  - task: AzureFunctionApp@2
+    inputs:
+      connectedServiceNameARM: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+      appType: 'functionAppLinux'
+      appName: $(App_name)
+      package: '$(System.DefaultWorkingDirectory)/alerts'
+      runtimeStack: 'PYTHON|3.11'

@@ -14,6 +14,7 @@ pool:
   vmImage: ubuntu-latest
 
 
+
 variables:
   - group: OCR_Environment_Var
   - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
@@ -43,7 +44,7 @@ steps:
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 
-
+# This is not needed since our tf config already creates a env variabls for each function |
 - task: AzureAppServiceSettings@1
   inputs:
     azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
