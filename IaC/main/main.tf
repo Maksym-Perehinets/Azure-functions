@@ -13,7 +13,7 @@ module "storage" {
   resource-group   = azurerm_resource_group.dev.name
   file-share-quota = terraform.workspace == "prod" ? 5 : 1
 }
-# Pipeline test
+# Pipeline test 2
 module "cognitive_service" {
   source         = "./modules/cognitive_service"
   location       = var.location
