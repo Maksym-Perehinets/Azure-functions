@@ -26,7 +26,7 @@ jobs:
     displayName: 'Check for changes in directories'
 
 - job: AlertsJob
-  condition: contains(variables['Build.SourceVersionMessage'], 'alerts/')
+  condition: eq(dependencies.DetermineChanges.outputs['alerts_changed'], '1')
   steps:
     - task: AzureAppServiceSettings@1
       inputs:
@@ -58,7 +58,7 @@ jobs:
         runtimeStack: 'PYTHON|3.11'
 
 - job: OCRJob
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), contains(variables['Build.SourceBranch'], 'src'))
+  condition: eq(dependencies.DetermineChanges.outputs['src_changed'], '1')
   steps:
     - task: FuncToolsInstaller@0
       inputs:
