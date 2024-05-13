@@ -17,8 +17,8 @@ jobs:
     - checkout: self
     - bash: |
         echo "Checking for changes in the 'alerts' and 'src' directories..."
-        git diff --name-only ${{ variables['Build.SourceBranch'] }} ${{ variables['Build.SourceVersion'] }} | grep 'alerts/' && echo "##vso[task.setvariable variable=alertChanges;isOutput=true]true"
-        git diff --name-only ${{ variables['Build.SourceBranch'] }} ${{ variables['Build.SourceVersion'] }} | grep 'src/' && echo "##vso[task.setvariable variable=srcChanges;isOutput=true]true"
+        git diff --name-only HEAD~1 HEAD | grep 'alerts/' && echo "##vso[task.setvariable variable=alertChanges;isOutput=true]true"
+        git diff --name-only HEAD~1 HEAD | grep 'src/' && echo "##vso[task.setvariable variable=srcChanges;isOutput=true]true"
       name: detectChanges
       displayName: Detect Changes
 
