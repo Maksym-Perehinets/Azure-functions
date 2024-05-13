@@ -14,6 +14,19 @@ steps:
       backendAzureRmStorageAccountName: 'remotetfbac324r4njrf'
       backendAzureRmContainerName: 'tfstate'
       backendAzureRmKey: 'terraform.tfstate'
+
+  # Select terraform workspace
+  - task: Bash@3
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    inputs:
+      targetType: inline
+      script: terraform workspace select prod
+  - task: Bash@3
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+    inputs:
+      targetType: inline
+      script: terraform workspace select dev
+
   - task: TerraformTaskV4@4
     displayName: terraform validate
     inputs:
