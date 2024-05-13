@@ -12,7 +12,7 @@ pool:
 
 jobs:
 - job: AlertsJob
-  condition: and(succeeded(), contains(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceVersionMessage'], 'alerts/'))
+  condition: contains(variables['Build.SourceVersionMessage'], 'alerts/')
   steps:
     - task: AzureAppServiceSettings@1
       inputs:
