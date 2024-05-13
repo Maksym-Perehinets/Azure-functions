@@ -28,7 +28,7 @@ stages:
   - job: TerraformApply
     displayName: Code validation and infrastructure deploy (terraform validate/aplly)
     steps:
-      - template: templates/commit.yml
+      - template: template/commit.yml
 - stage: PullRequest
   displayName: Test build
   condition: eq(variables['Build.Reason'], 'PullRequest')
@@ -38,4 +38,4 @@ stages:
     - job: TerraformPlan
       displayName: Code validation and dry run (terraform validate/plan)
       steps:
-        - template: templates/pull-request.yml
+        - template: template/pull-req.yml
