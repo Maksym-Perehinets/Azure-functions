@@ -14,14 +14,13 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
+  - group: OCR_Environment_Var
   - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
-      - group: OCR_Environment_Var_Prod
       - name: 'App_name'
         value: 'func-notify-prod-westeurope'
       - name: 'Group_name'
         value: 'rg-ocr-prod-westeurope'
   - ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
-      - group: OCR_Environment_Var
       - name: 'App_name'
         value: 'func-notify-dev-westeurope'
       - name: 'Group_name'
@@ -29,18 +28,6 @@ variables:
 
 steps:
   - bash: echo "Current branch is $(Build.SourceBranchName)"
-  - task: FuncToolsInstaller@0
-    inputs:
-      version: 'latest'
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.11'
-      addToPath: true
-  - script: |
-      cd alerts
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
-    displayName: 'Install dependencies'
   - task: AzureAppServiceSettings@1
     inputs:
       azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
@@ -62,14 +49,10 @@ steps:
           }
         ]
 
-  - task: AzureCLI@2
+  - task: AzureFunctionApp@2
     inputs:
-      azureSubscription: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        cd alerts
-        func pack
-        func azure functionapp publish $(App_name) --python
-    displayName: 'Deploy Function App'
-
+      connectedServiceNameARM: 'Azure for Students(12c692a0-00e1-447a-8d87-2712018a0472)'
+      appType: 'functionAppLinux'
+      appName: $(App_name)
+      package: '$(System.DefaultWorkingDirectory)/alerts'
+      runtimeStack: 'PYTHON|3.11'
