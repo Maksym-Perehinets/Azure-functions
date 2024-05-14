@@ -46,3 +46,8 @@ resource "azurerm_storage_share" "main" {
   quota                = var.file-share-quota
 }
 
+resource "azurerm_storage_share_directory" "main" {
+  name                 = "processed"
+  share_name           = azurerm_storage_share.main.name
+  storage_account_name = azurerm_storage_account.main.name
+}
