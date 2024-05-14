@@ -25,7 +25,7 @@ variables:
   - ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
       - group: OCR_Environment_Var
       - name: 'App_name'
-        value: 'func-ocr-prod-westeurope'
+        value: 'func-ocr-dev-westeurope'
       - name: 'Group_name'
         value: 'rg-ocr-dev-westeurope'
 
