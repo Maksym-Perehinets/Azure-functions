@@ -24,9 +24,9 @@ variables:
         value: 'pdfocrjson_group'
   - ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
       - name: 'App_name'
-        value: 'pdfocrjson_dev'
+        value: 'func-ocr-dev-westeurope'
       - name: 'Group_name'
-        value: 'pdfocrjson_dev_group'
+        value: 'rg-ocr-dev-westeurope'
 
 
 steps:
