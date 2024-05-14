@@ -16,15 +16,16 @@ pool:
 
 
 variables:
-  - group: OCR_Environment_Var
   - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+      - group: OCR_Environment_Var_Prod
       - name: 'App_name'
-        value: 'pdfocrjson'
+        value: 'func-ocr-prod-westeurope'
       - name: 'Group_name'
-        value: 'pdfocrjson_group'
+        value: 'rg-ocr-prod-westeurope'
   - ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
+      - group: OCR_Environment_Var
       - name: 'App_name'
-        value: 'func-ocr-dev-westeurope'
+        value: 'func-ocr-prod-westeurope'
       - name: 'Group_name'
         value: 'rg-ocr-dev-westeurope'
 
