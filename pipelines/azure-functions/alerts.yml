@@ -14,7 +14,6 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  
   - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
       - group: OCR_Environment_Var_Prod
       - name: 'App_name'
