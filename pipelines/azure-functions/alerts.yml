@@ -17,14 +17,14 @@ variables:
   - group: OCR_Environment_Var
   - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
       - name: 'App_name'
-        value: 'notifyapps'
+        value: 'func-notify-prod-westeurope'
       - name: 'Group_name'
-        value: 'notifyapps_group'
+        value: 'rg-ocr-prod-westeurope'
   - ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
       - name: 'App_name'
-        value: 'notifyapps_dev'
+        value: 'func-notify-dev-westeurope'
       - name: 'Group_name'
-        value: 'notifyapps_dev_group'
+        value: 'rg-ocr-dev-westeurope'
 
 steps:
   - bash: echo "Current branch is $(Build.SourceBranchName)"
