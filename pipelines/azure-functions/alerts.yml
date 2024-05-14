@@ -48,6 +48,10 @@ steps:
           {
             "name": "SLACK_WEBHOOK_URL",
             "value": "$(SLACK_WEBHOOK_URL)"
+          },
+          {
+            "name": "BLOB_CONTAINER_NAME",
+            "value": "$(BLOB_CONTAINER_NAME)"
           }
         ]
 
