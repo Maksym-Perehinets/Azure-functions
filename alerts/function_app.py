@@ -6,7 +6,7 @@ import os
 
 app = func.FunctionApp()
 
-@app.blob_trigger(arg_name="myblob", path=str(os.getenv('BLOB_CONTAINER_NAME'))+"{name}.json", connection="fileblob123_STORAGE") 
+@app.blob_trigger(arg_name="myblob", path=os.getenv('BLOB_CONTAINER_NAME')+"{name}.json", connection="fileblob123_STORAGE") 
 def blob_trigger(myblob: func.InputStream):
     logging.info(f"Python blob trigger function processed blob\nName: {myblob.name}")
     
