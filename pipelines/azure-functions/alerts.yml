@@ -68,7 +68,7 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript: |
-        cd src
+        cd alerts
         func pack
         func azure functionapp publish $(App_name) --python
     displayName: 'Deploy Function App'
